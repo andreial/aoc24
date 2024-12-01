@@ -1,0 +1,14 @@
+{
+  "imports": {
+    "@std/csv": "jsr:@std/csv@1.0.4"
+  },
+  "fmt": {
+    "options": {
+      "indentWidth": 2,
+      "lineWidth": 100,
+      "singleQuote": true,
+      "proseWrap": "always",
+      "semiColons": false
+    }
+  }
+}
