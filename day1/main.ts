@@ -1,7 +1,8 @@
-import { readTsvFile } from '../utils/file.ts'
+import { parse } from '@std/csv/parse'
 import { asc } from '../utils/sort.ts'
 
-const input = await readTsvFile('./input.csv', ['left', 'right'])
+const file = await Deno.readTextFile('./input.csv')
+const input = parse(file, { columns: ['left', 'right'] })
 
 const left = input.map((r) => Number(r.left)).toSorted(asc)
 const right = input.map((r) => Number(r.right)).toSorted(asc)
