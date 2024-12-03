@@ -11,7 +11,7 @@ const isOrdered = (report: number[], direction: 'asc' | 'dsc') =>
     return direction === 'asc' ? level >= report[index - 1] : level <= report[index - 1]
   })
 
-const areReportLevelsOrderedAndMatchingDifference = (report: number[]) => {
+const isOrderedAndMatchingDifference = (report: number[]) => {
   const matchesDifference = report.every((level, index): boolean => {
     if (index === 0) {
       return true
@@ -25,22 +25,41 @@ const areReportLevelsOrderedAndMatchingDifference = (report: number[]) => {
     (isOrdered(report, 'asc') || isOrdered(report, 'dsc'))
 }
 
-const isReportSafe = (report: number[]) => {
-  if (areReportLevelsOrderedAndMatchingDifference(report)) {
+const isReportSafe = (report: number[], strict: boolean) => {
+  if (strict) {
+    return isOrderedAndMatchingDifference(report)
+  }
+
+  if (isOrderedAndMatchingDifference(report)) {
     return true
   }
 
   const safeByRemovingOneItem = report.some((_, index) => {
-    return areReportLevelsOrderedAndMatchingDifference(report.toSpliced(index, 1))
+    return isOrderedAndMatchingDifference(report.toSpliced(index, 1))
   })
   return safeByRemovingOneItem
 }
 
-const safeReports = input.filter((rawReport) => {
-  const report = rawReport.map((level) => Number(level))
-  const isSafe = isReportSafe(report)
-  console.log(isSafe ? '✅' : '❌', JSON.stringify(report))
-  return isSafe
-})
+const checkSafeReports = ({ strict }: { strict: boolean }) => {
+  const safeReports = input.filter((rawReport) => {
+    const report = rawReport.map((level) => Number(level))
+    const isSafe = isReportSafe(report, strict)
+    console.log(isSafe ? '✅' : '❌', JSON.stringify(report))
+    return isSafe
+  })
 
-console.log({ safeReportsCount: safeReports.length })
+  return safeReports.length
+}
+
+const part1 = () => {
+  const safeReports = checkSafeReports({ strict: true })
+  console.log('Part 1: ', { safeReportsCount: safeReports })
+}
+
+const part2 = () => {
+  const safeReports = checkSafeReports({ strict: false })
+  console.log('Part 2: ', { safeReportsCount: safeReports })
+}
+
+part1()
+part2()
