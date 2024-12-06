@@ -67,24 +67,21 @@ const isObstruction = (object: string) => {
 const getVisitedLocations = (startingPosition: Position, map: string[][]) => {
   let guard: Guard | undefined = { position: startingPosition, facing: FacingDirection.Up }
 
-  const visitedLocations: Position[] = []
+  const guardPositions = new Map<string, Guard>([])
   let isStuckInLoop = false
 
-  let locationCounter = 0
 
   while (guard !== undefined && !isStuckInLoop) {
-    const hasVisitedLocation = visitedLocations.some((location) =>
-      location.x === guard?.position.x && location.y === guard?.position.y
-    )
-    if (!hasVisitedLocation) {
-      visitedLocations.push(guard.position)
-    }
+    const getKey = (guard: Guard) => `${guard.facing};${guard.position.x};${guard.position.y}`
+    const key = getKey(guard)
 
-    locationCounter++
-    isStuckInLoop = locationCounter > (visitedLocations.length * 2) + 1
-    if (isStuckInLoop) {
+    if (guardPositions.has(key)) {
+      // we've been here before
+      isStuckInLoop = true
       break
     }
+
+    guardPositions.set(key, guard)
 
     const nextPosition = getNextPosition(
       guard.position.x,
@@ -92,7 +89,6 @@ const getVisitedLocations = (startingPosition: Position, map: string[][]) => {
       guard.facing,
     )
     const nextObjectInMap = map[nextPosition.x]?.[nextPosition.y]
-
     if (!nextObjectInMap) {
       guard = undefined
       break
@@ -110,9 +106,12 @@ const getVisitedLocations = (startingPosition: Position, map: string[][]) => {
     }
   }
 
+  const visitedLocations = guardPositions.values().map((value) => JSON.stringify(value.position))
+  const uniqueVisitedLocations = new Set(visitedLocations)
+
   return {
     isStuckInLoop,
-    visitedLocations,
+    visitedLocations: [...uniqueVisitedLocations].map((position) => (JSON.parse(position))),
   }
 }
 
@@ -158,4 +157,7 @@ const part2 = () => {
 }
 
 part1()
+
+console.time('Part 2 took:')
 part2()
+console.timeEnd('Part 2 took:')
