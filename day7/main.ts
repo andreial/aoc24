@@ -36,7 +36,7 @@ const generateOperatorCombinations = (
   }
 
   let combinations: Operator[][] = validOperators.map((op) => [op])
-  for (let i = 1; i < operatorsCount; i++) {
+  for (let i = 0; i < operatorsCount - 1; i++) {
     const newCombinations: Operator[][] = [[]]
 
     combinations.forEach((combination) => {
@@ -58,6 +58,10 @@ const isEquationValid = (equation: Equation): boolean => {
 
   operators.forEach((operator, index) => {
     const next = operands[index + 1]
+
+    if (result > expectedResult) {
+      return false
+    }
 
     switch (operator) {
       case '+':
