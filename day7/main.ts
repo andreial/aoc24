@@ -22,12 +22,17 @@ const getEquations = async (): Promise<Equation[]> => {
   })
 }
 
+const operatorCombinationsCache = new Map<string, Operator[][]>()
+const getCacheKey = (operators: Operator[], count: number) => `${operators.join('-')}-${count}`
+
 const generateOperatorCombinations = (
   operatorsCount: number,
   validOperators: Operator[],
 ): Operator[][] => {
-  if (operatorsCount === 0) {
-    return [[]]
+  const key = getCacheKey(validOperators, operatorsCount)
+  const combinationFromCache = operatorCombinationsCache.get(key)
+  if (combinationFromCache) {
+    return combinationFromCache
   }
 
   let combinations: Operator[][] = validOperators.map((op) => [op])
@@ -43,6 +48,7 @@ const generateOperatorCombinations = (
     combinations = newCombinations
   }
 
+  operatorCombinationsCache.set(key, combinations)
   return combinations
 }
 
